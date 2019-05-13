@@ -13,7 +13,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     snake.update();
-    snake.checkBorders(border.left, border.right, border.top, border.bottom);
+//    snake.checkBorders(border.left, border.right, border.top, border.bottom);
+    checkBorders();
     if (snake.eat(food.getPos())) {
         food.setNewPos();
     }
@@ -21,22 +22,24 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-//void ofApp::checkBorders() {
-//    cout << "checking borders" <<
+void ofApp::checkBorders() {
+//    cout << "checking borders" <<;
 //    ofClamp(snake.pos.x, border.left + snake.size, border.right - snake.size);
 //    ofClamp(snake.pos.y, border.top + snake.size, border.bottom - snake.size);
-//
-////    //todo: rewrite it using switch statement
-////    if(snake.pos.x + snake.size >= border.right) {
-////        snake.setDirection(-1, 0);
-////    } else if(snake.pos.y + snake.size >= border.top) {
-////        snake.setDirection(0, 1);
-////    } else if(snake.pos.x + snake.size >= border.left) {
-////        snake.setDirection(1, 0);
-////    } else if(snake.pos.y + snake.size >= border.bottom) {
-////        snake.setDirection(0, -1);
-////    }
-//}
+
+//    //todo: rewrite it using switch statement
+    int xPos = static_cast<int>(snake.elementPos.x);
+    
+    if(xPos + snake.elementSize >= border.right) {
+        snake.setDirection(-1, 0);
+    } else if(snake.elementPos.y + snake.elementSize <= border.top) {
+        snake.setDirection(0, 1);
+    } else if(snake.elementPos.x + snake.elementSize <= border.left) {
+        snake.setDirection(1, 0);
+    } else if(snake.elementPos.y + snake.elementSize >= border.bottom) {
+        snake.setDirection(0, -1);
+    }
+}
 
 //--------------------------------------------------------------
 void ofApp::draw(){

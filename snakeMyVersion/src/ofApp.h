@@ -11,7 +11,7 @@ class ofApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
-//        void checkBorders();
+        void checkBorders();
 		void draw();
 
 		void keyPressed(int key);

@@ -31,13 +31,15 @@ void Snake::setDirection(float m_x, float m_y) {
 void Snake::checkBorders(int leftBorder, int rightBorder, int topBorder, int bottomBorder) {
         cout << "checking borders" <<
     //todo: take into account the future change in size
+    //
         ofClamp(elementPos.x, leftBorder + elementSize, rightBorder - elementSize);
         ofClamp(elementPos.y, topBorder + elementSize, bottomBorder - elementSize);
 }
 
 void Snake::update() {
     for (ofVec2f& elementPos : snakeElements) {
-        elementPos = elementPos + speed * speedFactor;
+        ofVec2f test = elementPos + elementSize;
+        elementPos = elementPos + (elementSize * speed);
     }
 }
 
@@ -51,7 +53,7 @@ void Snake::draw() {
 bool Snake::eat(ofVec2f foodPos) {
     assert(!snakeElements.empty()); //if the vector is not empty, proceed; if it is empy, abort
     
-    auto elementPos = snakeElements.front();
+    auto elementPos = snakeElements.front(); //retrieve first element from the vector
     
     if (elementPos.distance(foodPos) <= 0.25) {
         std::cout << " eat!" << std::endl;

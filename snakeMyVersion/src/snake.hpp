@@ -21,7 +21,7 @@ public:
     ofVec2f speed;
     float speedFactor;
     ofColor elementColour;
-    std::vector<ofVec2f> snakeElements;
+    std::vector<ofVec2f> snakeElements; //store x and y in a 2d vector and these paired valuees in another vector list
     
     void setup();
     void setDirection(float x, float y);
