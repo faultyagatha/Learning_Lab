@@ -1,0 +1,3 @@
+ofxAssimpModelLoader
+ofxAutoReloadedShader-master_0.8.4
+ofxGui
