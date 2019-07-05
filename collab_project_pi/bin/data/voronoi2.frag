@@ -38,7 +38,7 @@ float voronoi(vec2 pos) {
     return sqrt(dist);
 }
 
-void main(void) { //we're not allowed to pass anything to the main. Otherwise, a compiler err.
+void main() {
 
 //    float u_scale = 2.0; //osc var
     vec2 uv = (gl_FragCoord.xy / u_resolution.xy) * u_scale - 1.0;

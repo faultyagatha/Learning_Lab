@@ -1,11 +1,11 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxOsc.h"
+//#include "ofxOsc.h"
 
-#define PORT 12345
-// max number of strings to display
-#define NUM_MSG_STRINGS 20
+//#define PORT 12345
+//// max number of strings to display
+//#define NUM_MSG_STRINGS 20
 
 class ofApp : public ofBaseApp{
 
@@ -28,6 +28,4 @@ class ofApp : public ofBaseApp{
     
     ofShader shader;
     void setUniforms();
-    void loadShaders(size_t which);
-		
 };

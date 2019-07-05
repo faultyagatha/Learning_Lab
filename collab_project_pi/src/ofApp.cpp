@@ -1,20 +1,20 @@
 /*
- a base for the projection mapping:
- - add a simple shader
- - add osc
+ Shader layout desigend for the projection mapping with raspberry pi (optimised for GLES)
+ To do:
+ - bild on raspberry pi with ofxPiMapper
+ - optional: add osc
  - bind the parameters of a shader to osc
- - bild on raspberry pi
- - optional: add more shaders
  
+ Author: @faulty_agatha
+ Last modified: 5.07.2019
  */
 
 #include "ofApp.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-//    loadShaders(0);
-    shader.load("voronoi1"); //load both shaders simult
-//    shader.load("voronoi2");
+    shader.load("voronoi1"); //voronoi1 is adapted for GLES
+//    shader.load("voronoi2"); //voronoi2 and voronoi3 are #version 120 and can run in oF independently of raspberry pi settings
 //    shader.load("voronoi3");
 }
 
@@ -40,45 +40,16 @@ void ofApp::setUniforms(){
     float scale = 2.0;
     float cell_size = 2.0;
     
-    //pass the time and resolution
+    //pass the uniforms to the shaders (scale and cell_size are for the OSC implementation)
     shader.setUniform1f("u_time", ofGetElapsedTimef());
     shader.setUniform2fv("u_resolution", resolution);
     shader.setUniform1f("u_scale", scale);
     shader.setUniform1f("u_cell_size", cell_size);
-
-    
 }
 
 //--------------------------------------------------------------
-//void ofApp::loadShaders(size_t which) {
-//    std::vector<std::string> filenames {
-//        "00_flat",
-//        "01_gradient",
-//        "02_wave",
-//        "03_uniform"
-//    };
-//    auto filename = filenames[which]; //todo: make the programe throw the exception if out of bounds but without termination
-//    filename += "_GL3";
-//
-////#ifdef TARGET_OPENGLES
-////    filename += "_ES2";
-////#else
-////    if(ofIsGLProgrammableRenderer()) {
-////        filename += "_GL3";
-////    } else {
-////        filename += "_GL2";
-////    }
-////#endif
-//    shader.load(filename);
-//
-//    ofLog() << "Shader " << filename << " loaded at frame #" << ofGetFrameNum();
-//}
-
-//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-//    if(key >= '0' && key <= '4') {
-//        loadShaders(static_cast<size_t>(key - '0'));
-//    }
+    
 }
 
 //--------------------------------------------------------------
