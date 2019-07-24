@@ -1,9 +1,9 @@
 #version 120
 
-#pragma include "Shaders/Common/ShaderHelpers.glslinc"
-#pragma include "Shaders/Common/Noise2D.glslinc"
-#pragma include "Shaders/Common/Noise3D.glslinc"
-#pragma include "Shaders/Common/Noise4D.glslinc"
+#pragma include "Shaders/Helpers/ShaderHelpers.glslinc"
+#pragma include "Shaders/Helpers/Noise2D.glslinc"
+#pragma include "Shaders/Helpers/Noise3D.glslinc"
+#pragma include "Shaders/Helpers/Noise4D.glslinc"
 
 uniform float time;
 

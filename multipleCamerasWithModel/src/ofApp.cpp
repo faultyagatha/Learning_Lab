@@ -21,7 +21,9 @@ void ofApp::setup(){
     ofDisableArbTex(); //we want our texture coordinates in 0..1
     
     // load the model
-    model.loadModel("models/woman.obj");
+//    model.loadModel("models/woman.obj");
+    model.loadModel("models/womanRobot_norig.obj");
+//    model.loadModel("models/robot.obj");
     model.setRotation(0, 180, 1, 1, 0);
     
     //light settings
@@ -50,6 +52,16 @@ void ofApp::setup(){
     gui.loadFromFile(settingsPath);
     drawGui = false;
     
+//    syphonSetup();
+}
+
+void ofApp::syphonSetup() {
+    ofSetWindowTitle("ofxSyphon Example");
+    mainOutputSyphonServer.setName("Screen Output");
+    
+    mClient.setup();
+    mClient.set("","Simple Server");
+    ofSetFrameRate(60); // if vertical sync is off, we can go a bit fast.
 }
 
 //--------------------------------------------------------------
@@ -108,6 +120,10 @@ void ofApp::draw(){
     ofDisableDepthTest();
     
     if(drawGui) gui.draw();
+    
+    //Syphon stuff
+//    mClient.draw(50, 50);
+//    mainOutputSyphonServer.publishScreen();
 }
 
 

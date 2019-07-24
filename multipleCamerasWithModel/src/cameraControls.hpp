@@ -9,7 +9,9 @@
 #define cameraControls_hpp
 
 #include <stdio.h>
-#include "ofMain.h" // we need to include main to have a reference to the openFrameworks framework#include "ofApp.h"
+#include "ofMain.h" // include main to have a reference to the openFrameworks #include "ofApp.h"
+
+//think what goes into private
 
 class cameraControls {
 public:

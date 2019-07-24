@@ -5,12 +5,14 @@
 #include "cameraControls.hpp"
 #include "ofxGui.h"
 #include "ofxAutoReloadedShader.h"
+#include "ofxSyphon.h"
 
 
 class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
+        void syphonSetup();
 		void update();
 		void draw();
 
@@ -28,7 +30,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    cameraControls cam;
     ofLight light;
     ofMaterial material;
     
@@ -44,6 +45,11 @@ class ofApp : public ofBaseApp{
     ofParameter<float> shininess;
     
     bool drawGui;
+    
+private:
+    cameraControls cam;
+    ofxSyphonServer mainOutputSyphonServer;     //syphon settings
+    ofxSyphonClient mClient;
 		
 };
 
