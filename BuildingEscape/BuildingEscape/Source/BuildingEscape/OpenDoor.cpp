@@ -37,7 +37,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
         LastDoorOpenTime = GetWorld()->GetTimeSeconds();
     }
     
-    if((GetWorld()->GetTimeSeconds() - LastDoorOpenTime) > DoorCloseDelay)
+    if(GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
     {
         CloseDoor();
     }
@@ -52,6 +52,6 @@ void UOpenDoor::OpenDoor()
 void UOpenDoor::CloseDoor()
 {
     //a shortcut withour creating the rotator
-    Owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f)); //set the rotation
+    Owner->SetActorRotation(FRotator(0.0f, 180.0f, 0.0f)); //set the rotation
 }
 

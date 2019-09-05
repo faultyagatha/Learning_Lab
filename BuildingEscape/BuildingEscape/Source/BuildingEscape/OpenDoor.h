@@ -37,7 +37,7 @@ private:
     UPROPERTY(EditAnywhere)
     float DoorCloseDelay = 1.f;
     
-    float LastDoorOpenTime = 0.0f;
+    float LastDoorOpenTime;
     
     //make the pawn trigger the door opening via ATriggerVolume
     //pawn inherits from actor so it's better to use AActor to be more generic
