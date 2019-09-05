@@ -4,7 +4,7 @@
 #include "ofxAssimpModelLoader.h"
 #include "cameraControls.hpp"
 #include "ofxGui.h"
-#include "ofxAutoReloadedShader.h"
+#include "ofxAutoReloadedShader.h" 
 #include "ofxSyphon.h"
 
 
@@ -14,10 +14,13 @@ class ofApp : public ofBaseApp{
 		void setup();
         void syphonSetup();
 		void update();
-		void draw();
-
-        void drawScene(int iCameraDraw);
-
+        void setUniforms();
+    
+        void draw();
+        void drawMode(int key);
+        void loadShaders(size_t which);
+        void error(std::string s);
+    
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -34,16 +37,15 @@ class ofApp : public ofBaseApp{
     ofMaterial material;
     
     ofxAssimpModelLoader model;
+    bool drawVerts;
+    bool drawWire;
+    bool drawFaces;
+    
     ofxAutoReloadedShader shader;
-    
+    //gui shader
     ofxPanel gui;
-    
-    ofParameter<ofColor> color1;
-    ofParameter<ofColor> color2;
-    ofParameter<ofColor> color3;
-    
-    ofParameter<float> shininess;
-    
+    ofParameter<float> cell_size;
+    ofParameter<float> scale;
     bool drawGui;
     
 private:

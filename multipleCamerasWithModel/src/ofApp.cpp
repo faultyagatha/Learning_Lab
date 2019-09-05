@@ -1,54 +1,72 @@
-/* using member functions of the ofNode class
- and only one camera for the start
+/* a simple application that
+ - loads a 3d model;
+ - allows for various modes of drawing the model's mesh;
+ - has a customised camera control (close-up, pan back, orbit, etc);
+ - implements 5 fragment shaders with possibility to switch between them on key pressed
+ - and 1 simple vertex shader that displaces model's vertices;
+ - GUI for a smoother shader control;
+ - additionally: syphon integration
+ 
  references:
- https://learnopengl.com/Getting-started/Camera
+ https://github.com/hamoid/Fun-Programming/wiki/In-the-Mood-for-Shaders
  https://github.com/andreasmuller/NoiseWorkshop
- press TAB to show the gui and change the colour of the model
- at the moment, there is no possibility to change the shaders on the fly.
- The code must be uncommented in the frag shader.
+ https://learnopengl.com/Getting-started/Camera
+ 
+ https://thebookofshaders.com
+ http://iquilezles.org
+ 
+ *********************************************
+ INSTRUCTIONS:
+ - use keys 0-4 to switch between shaders
+ - press TAB to show the gui
+ - use keys 'h', 'r', 't', 'd'
+    and     'key down', '-up', '-left', and '-right'
+    for camera manipulations
+ - use keys  'w', 'f', 'v'
+    for switching between drawing modes of a model
+ 
+ author: @faultyagatha
  */
 
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){
-    //shader load
-    shader.load("shaders/LiveCodingSurface/GL2/LiveCodingSurface");
+void ofApp::setup() {
+    loadShaders(0);
+//    shader.load("shaders/meshDeform");
+//    shader.load("shaders/distanceFields");
+//    shader.load("shaders/simplexNoise1");
+//    shader.load("shaders/voronoi1");
     
     ofSetVerticalSync(true);
     ofBackgroundGradient(ofColor(255), ofColor(128));
     ofEnableSmoothing();
     ofDisableArbTex(); //we want our texture coordinates in 0..1
     
-    // load the model
-//    model.loadModel("models/woman.obj");
     model.loadModel("models/womanRobot_norig.obj");
-//    model.loadModel("models/robot.obj");
     model.setRotation(0, 180, 1, 1, 0);
+    drawFaces = false;
+    drawVerts = true;
+    drawWire = false;
     
-    //light settings
     ofSetSmoothLighting(true);
     light.setPointLight();
     light.setPosition(ofVec3f(2, 10, 2));
     light.enable();
     
-    //material setup
-    ofSetGlobalAmbientColor(ofColor(20, 20, 20));
-    material.setDiffuseColor(ofFloatColor::white);
-    material.setSpecularColor(ofFloatColor::white);
-    material.setEmissiveColor(ofFloatColor::black);
-    material.setAmbientColor(ofFloatColor::black);
-    material.setShininess(10);
+    //material setup TODO: check if I need those
+//    ofSetGlobalAmbientColor(ofColor(20, 20, 20));
+//    material.setDiffuseColor(ofFloatColor::white);
+//    material.setSpecularColor(ofFloatColor::white);
+//    material.setEmissiveColor(ofFloatColor::black);
+//    material.setAmbientColor(ofFloatColor::black);
+//    material.setShininess(10);
     
-    //gui
+    //gui for shaders
     string settingsPath = "Settings/Main.xml";
     gui.setup("Main", settingsPath);
-    
-    gui.add(color1.set("Color 1", ofColor::white, ofColor(0,0,0,0), ofColor::white));
-    gui.add(color2.set("Color 2", ofColor::white, ofColor(0,0,0,0), ofColor::white));
-    gui.add(color3.set("Color 3", ofColor::white, ofColor(0,0,0,0), ofColor::white));
-    gui.add(shininess.set("shininess",  20.0f,  0.0f,  127.0f));
-    
+    gui.add(cell_size.set("cell_size",  2.0f,  0.1f,  30.0f));
+    gui.add(scale.set("scale",  2.0f,  0.5f,  10.0f));
     gui.loadFromFile(settingsPath);
     drawGui = false;
     
@@ -58,48 +76,37 @@ void ofApp::setup(){
 void ofApp::syphonSetup() {
     ofSetWindowTitle("ofxSyphon Example");
     mainOutputSyphonServer.setName("Screen Output");
-    
     mClient.setup();
     mClient.set("","Simple Server");
     ofSetFrameRate(60); // if vertical sync is off, we can go a bit fast.
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
+void ofApp::update() {
     cam.cameraOrbit();
     cam.cameraRoll();
     cam.cameraTruck();
     cam.cameraDolly();
 }
 
+void ofApp::setUniforms() {
+    float width = ofGetWidth();
+    float height = ofGetHeight();
+    float resolution[] = {width, height};
+    shader.setUniform1f("u_time", ofGetElapsedTimef());
+    shader.setUniform2fv("u_resolution", resolution);
+    shader.setUniform1f("u_scale", scale);
+    shader.setUniform1f("u_cell_size", cell_size);
+}
+
 //--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::draw() {
     ofSetBackgroundColor(0.0);
-    //to pass to the shader
-    float mx = ofGetMouseX() / (float)ofGetWidth();
-    float my = ofGetMouseY() / (float)ofGetHeight();
-    
     ofEnableDepthTest();
-    
     cam.cameraBegin();
-    material.setShininess(shininess);
-    material.begin();
+//    material.begin();
     shader.begin();
-    
-    shader.setUniform1f("time", ofGetElapsedTimef());
-    shader.setUniform1f("mouseX", mx);
-    shader.setUniform1f("mouseY", my);
-    
-    // Convert 0..255 colors to 0..1
-    ofFloatColor col1 = color1.get();
-    ofFloatColor col2 = color2.get();
-    ofFloatColor col3 = color3.get();
-    
-    shader.setUniform4fv("color1", col1.v );
-    shader.setUniform4fv("color2", col2.v );
-    shader.setUniform4fv("color3", col3.v );
-    
-    //shader.setUniform1f("shininess", shininess );
+    setUniforms();
     
     ofSetColor(ofColor::white);
     
@@ -109,11 +116,15 @@ void ofApp::draw(){
 //    cout << mouseX << endl;
 //    cout << mouseY << endl;
 //    cout << model.getPosition() << endl;
-    model.drawFaces();
+    
+    if(drawVerts) model.drawVertices();
+    else if(drawWire) model.drawWireframe();
+    else if(drawFaces)model.drawFaces();
+
     ofPopMatrix();
 
     shader.end();
-    material.end();
+//    material.end();
     ofDisableLighting();
     ofSetColor(light.getDiffuseColor());
     cam.cameraEnd();
@@ -126,17 +137,65 @@ void ofApp::draw(){
 //    mainOutputSyphonServer.publishScreen();
 }
 
+//--------------------------------------------------------------
+void ofApp::drawMode(int key) {
+    switch(key) {
+        case 'w':
+            drawVerts = false;
+            drawWire = true;
+            drawFaces = false;
+            ofLog() << "wireframe mode";
+            break;
+        case 'f':
+            drawVerts = false;
+            drawWire = false;
+            drawFaces = true;
+            ofLog() << "faces mode";
+            break;
+        case 'v':
+            drawVerts = true;
+            drawWire = false;
+            drawFaces = false;
+            ofLog() << "vertices mode";
+            break;
+        default:
+            break;
+    }
+}
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+void ofApp::loadShaders(size_t which) {
+    std::vector<std::string> filenames {
+        "distanceFields",
+        "meshDeform",
+        "simplexNoise1",
+        "voronoi1",
+        "voronoi2"
+    };
+    try {
+        auto filename = filenames[which];
+        shader.load(filename);
+        ofLog() << "Shader " << filename << " loaded at frame #" << ofGetFrameNum();
+    }
+    catch(std::exception& e) {
+        std::cerr << "Error" <<e.what();
+        return 1; //todo: check with stan if it's right
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::error(std::string s) {
+    throw std::runtime_error(s);
+}
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
     cam.cameraKeyPressed(key);
+    drawMode(key);
     
-    if(key == OF_KEY_TAB) {
-        drawGui = !drawGui;
-    }
-    else if(key == 'f') {
-        ofToggleFullscreen();
-    }
+    if(key == OF_KEY_TAB) drawGui = !drawGui;
+    else if(key == 'p') ofToggleFullscreen();
+    else if(key >= '0' && key <= '4') loadShaders(static_cast<size_t>(key - '0'));
 }
 
 //--------------------------------------------------------------
