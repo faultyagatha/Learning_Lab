@@ -6,6 +6,11 @@
 #include "ofxGui.h"
 #include "ofxAutoReloadedShader.h" 
 #include "ofxSyphon.h"
+#include "ofxOsc.h"
+
+
+//send port
+#define PORT 1234
 
 
 class ofApp : public ofBaseApp{
@@ -33,9 +38,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofLight light;
-    ofMaterial material;
-    
     ofxAssimpModelLoader model;
     bool drawVerts;
     bool drawWire;
@@ -46,13 +48,18 @@ class ofApp : public ofBaseApp{
     ofxPanel gui;
     ofParameter<float> cell_size;
     ofParameter<float> scale;
+    ofParameter<float> amp;
+    ofParameter<float> freq;
     bool drawGui;
+    
+    ofxOscReceiver receiver;
     
     
 private:
     cameraControls cam;
     ofxSyphonServer mainOutputSyphonServer;     //syphon settings
     ofxSyphonClient mClient;
+   
 		
 };
 

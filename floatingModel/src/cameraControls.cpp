@@ -15,19 +15,16 @@
 
 //constructor
 cameraControls::cameraControls()
-: truck{0.0}, roll{0.0}, orbit{0.0}, dolly{0.},
+    : truck{0.0}, roll{0.0}, orbit{0.0}, dolly{0.0},
     bOrbit{false}, bOrbitFast{false},bRoll{false}, bPanLeft{false},
     bPanRight{false}, bForward{false}, bBackward{false},
-    bCloseUp{false}, targetDistance{300.} {
+    targetDistance{300.} {
         cam.setPosition(0, 0, 1000);
         cam.lookAt(ofVec3f{0, 0, 0});
 }
 
-//getter - do I need?
-float cameraControls::getTargetDistance() { return targetDistance; }
-
 void cameraControls::cameraOrbit() {
-    if(bOrbit) orbit += 0.1; //you can rocket the whole thing by including everything below in the if statement above
+    if(bOrbit) orbit += 0.1;
     float lat = sin(orbit * M_PI / 180.) * 90.;
     ofVec3f centrePoint = ofVec3f(0, 0, 0);
     cam.orbitDeg(orbit, lat, targetDistance, centrePoint);
@@ -35,7 +32,7 @@ void cameraControls::cameraOrbit() {
 
 void cameraControls::cameraOrbitFast() {
     if(bOrbitFast) {
-        orbit += 0.1;
+        orbit += 0.4;
         float lat = sin(orbit * M_PI / 180.) * 90.;
         ofVec3f centrePoint = ofVec3f(0, 0, 0);
         cam.orbitDeg(orbit, lat, targetDistance, centrePoint);
@@ -47,7 +44,6 @@ void cameraControls::cameraRoll() {
     cam.rollDeg(roll);
 }
 
-//question: how to resume the position and start on where we finished
 void cameraControls::cameraPanLeft() {
     if(bPanLeft) {
         truck += 0.4;
@@ -64,10 +60,7 @@ void cameraControls::cameraPanRight() {
     }
 }
 
-//question: how to resume the position and start on where we finished
-//answer: create additional status variables
 void cameraControls::cameraPanForward() {
-    cout << "pan forward outside the loop " << dolly << "\n";
     if(bForward) {
         dolly -= 0.4;
         cam.dolly(dolly);
@@ -80,15 +73,6 @@ void cameraControls::cameraPanBackward() {
         targetDistance += 0.4;
         cam.dolly(targetDistance);
         cout << "panning backward at the target distance " << targetDistance << "\n";
-    }
-}
-
-//doesn't work. consider to delete
-void cameraControls::cameraCloseUp() {
-    if(bCloseUp) {
-        targetDistance *= 0.01;
-        cam.dolly(targetDistance);
-        cout << "close-up at the target distance " << targetDistance << "\n";
     }
 }
 
@@ -108,11 +92,9 @@ void cameraControls::cameraKeyPressed(int key) {
         case 'r':
             bRoll = !bRoll;
             break;
-        case 'c':
-            bCloseUp = !bCloseUp;
-            break;
         case 'b':
             bOrbitFast = !bOrbitFast;
+            break;
         case OF_KEY_LEFT:
             if(bPanRight) bPanRight = false;
             bPanLeft = !bPanLeft;

@@ -20,7 +20,6 @@ class cameraControls {
 public:
     
     cameraControls(); //default constructor
-    float getTargetDistance();
     
     void cameraOrbit();
     void cameraOrbitFast();
@@ -45,7 +44,6 @@ private:
     bool bRoll;
     bool bForward;
     bool bBackward;
-    bool bCloseUp;
     bool bPanLeft;
     bool bPanRight;
     

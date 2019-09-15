@@ -15,15 +15,18 @@
  https://thebookofshaders.com
  http://iquilezles.org
  
+ some notes:
+ - ofLight params are of no use if we use custom shaders;
+ - for notmal modification in the shader, it's useless to re-calculate the normal matrix in a shader, so pre-calculate it on CPU before passing it as a uniform to GPU.
  *********************************************
  INSTRUCTIONS:
- - use keys 0-5 to switch between shaders
+ - use keys 0-6 to switch between shaders
  - press TAB to show the gui
- - use keys 'h', 'r', 't', 'd'
+ - use keys 'h', 'r', 't', 'o', 'b'
     and     'key down', '-up', '-left', and '-right'
     for camera manipulations
  - use keys  'w', 'f', 'v'
-    for switching between drawing modes of a model
+    for switching between the drawing modes of a model
  
  author: @faultyagatha
  */
@@ -40,25 +43,28 @@ void ofApp::setup() {
     ofDisableArbTex(); //we want our texture coordinates in 0..1
     
     model.loadModel("models/womanRobot_norig.obj");
+//    model.loadModel("models/robot.obj");
     model.setRotation(0, 180, 1, 1, 0);
     drawFaces = false;
     drawVerts = true;
     drawWire = false;
-    
-    ofSetSmoothLighting(true);
-    light.setPointLight();
-    light.setPosition(ofVec3f(2, 10, 2));
-    light.enable();
     
     //gui for shaders
     string settingsPath = "Settings/Main.xml";
     gui.setup("Main", settingsPath);
     gui.add(cell_size.set("cell_size",  2.0f,  0.1f,  30.0f));
     gui.add(scale.set("scale",  2.0f,  0.5f,  10.0f));
+    gui.add(amp.set("amplitude", 0.0f,  0.0f,  10.0f));
+    gui.add(freq.set("frequency", 0.0f,  0.0f,  1.0f));
     gui.loadFromFile(settingsPath);
     drawGui = false;
     
-//    syphonSetup();
+    //listen on the given port
+    ofLog() << "listening for osc messages on port " << PORT;
+    receiver.setup(PORT);
+
+    
+    syphonSetup();
 }
 
 void ofApp::syphonSetup() {
@@ -66,11 +72,22 @@ void ofApp::syphonSetup() {
     mainOutputSyphonServer.setName("Screen Output");
     mClient.setup();
     mClient.set("","Simple Server");
-    ofSetFrameRate(60); // if vertical sync is off, we can go a bit fast.
+//    ofSetFrameRate(60); // if vertical sync is off, we can go a bit fast.
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+    //OSC stuff
+    while(receiver.hasWaitingMessages()) {
+        ofxOscMessage m;
+        receiver.getNextMessage(m);
+        if(m.getAddress() == "/cell_size") cell_size = m.getArgAsFloat(0);
+        else if(m.getAddress() == "/scale") scale = m.getArgAsFloat(0);
+        else if(m.getAddress() == "/amplitude") amp = m.getArgAsFloat(0);
+        else if(m.getAddress() == "/frequency") freq = m.getArgAsFloat(0);
+        else ofLog() << "cannot find any address";
+        }
+    
     cam.cameraOrbit();
     cam.cameraOrbitFast();
     cam.cameraRoll();
@@ -78,7 +95,6 @@ void ofApp::update() {
     cam.cameraPanRight();
     cam.cameraPanForward();
     cam.cameraPanBackward();
-    cam.cameraCloseUp();
 }
 
 void ofApp::setUniforms() {
@@ -90,6 +106,15 @@ void ofApp::setUniforms() {
     shader.setUniform2fv("u_resolution", resolution);
     shader.setUniform1f("u_scale", scale);
     shader.setUniform1f("u_cell_size", cell_size);
+    shader.setUniform1f("u_amp", amp);
+    shader.setUniform1f("u_freq", freq);
+    
+    //calculate nomal matrix on CPU matrix before feeding it to GPU
+    //for 4x4 matrix, simply use ofGetCurrentNormalMatrix();
+    ofMatrix3x3 normalMat = ofMatrix3x3(ofGetCurrentMatrix(OF_MATRIX_MODELVIEW));
+    normalMat.invert();
+    normalMat.transpose();
+    shader.setUniformMatrix3f("normalMatrix", normalMat);
 }
 
 //--------------------------------------------------------------
@@ -112,16 +137,14 @@ void ofApp::draw() {
     ofPopMatrix();
 
     shader.end();
-    ofDisableLighting();
-    ofSetColor(light.getDiffuseColor());
     cam.cameraEnd();
     ofDisableDepthTest();
     
     if(drawGui) gui.draw();
     
     //Syphon stuff
-//    mClient.draw(50, 50);
-//    mainOutputSyphonServer.publishScreen();
+    mClient.draw(50, 50);
+    mainOutputSyphonServer.publishScreen();
 }
 
 //--------------------------------------------------------------
@@ -156,6 +179,7 @@ void ofApp::loadShaders(size_t which) {
         "distanceFields",
         "meshDeform",
         "simplexNoise1",
+        "simplexNoise2",
         "voronoi1",
         "voronoi2",
         "worley"
@@ -167,7 +191,7 @@ void ofApp::loadShaders(size_t which) {
     }
     catch(std::exception& e) {
         std::cerr << "Error" <<e.what();
-        return 1; //todo: check with stan if it's right
+        return; //todo: check with stan if it's right
     }
 }
 
@@ -183,7 +207,7 @@ void ofApp::keyPressed(int key) {
     
     if(key == OF_KEY_TAB) drawGui = !drawGui;
     else if(key == 'p') ofToggleFullscreen();
-    else if(key >= '0' && key <= '5') loadShaders(static_cast<size_t>(key - '0'));
+    else if(key >= '0' && key <= '6') loadShaders(static_cast<size_t>(key - '0'));
 }
 
 //--------------------------------------------------------------
