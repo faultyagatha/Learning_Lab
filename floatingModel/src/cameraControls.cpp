@@ -1,7 +1,6 @@
 /*
  cameraControls.cpp
  customised camera controls:
- - close-up: change in targetDistance;
  - roll: roll left+right relative to current orientation (around local z axis);
  - orbit: orbit node around a global position at a specific radius;
  - truck: move sideways (in local x axis);
@@ -10,7 +9,6 @@
   author: @faultyagatha
 */
 
-//TODO: the values are correct but there is something else that affects the movement
 #include "cameraControls.hpp"
 
 //constructor

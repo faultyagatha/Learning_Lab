@@ -1,7 +1,6 @@
 /*
  cameraControls.cpp
  customised camera controls:
- - close-up: change in targetDistance;
  - roll: roll left+right relative to current orientation (around local z axis);
  - orbit: orbit node around a global position at a specific radius;
  - truck: move sideways (in local x axis);
@@ -28,7 +27,6 @@ public:
     void cameraPanRight();
     void cameraPanForward();
     void cameraPanBackward();
-    void cameraCloseUp();
     void update();
     void draw();
     void cameraBegin();

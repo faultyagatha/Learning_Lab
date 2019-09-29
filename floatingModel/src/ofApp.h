@@ -38,6 +38,9 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+    
+private:
+    cameraControls cam;
     ofxAssimpModelLoader model;
     bool drawVerts;
     bool drawWire;
@@ -53,14 +56,9 @@ class ofApp : public ofBaseApp{
     bool drawGui;
     
     ofxOscReceiver receiver;
-    
-    
-private:
-    cameraControls cam;
-    ofxSyphonServer mainOutputSyphonServer;     //syphon settings
+    ofxSyphonServer mainOutputSyphonServer;
     ofxSyphonClient mClient;
    
-		
 };
 
 

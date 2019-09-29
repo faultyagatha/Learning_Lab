@@ -2,7 +2,7 @@
  - loads a 3d model;
  - allows for various modes of drawing the model's mesh;
  - has a customised camera control (close-up, pan back, orbit, etc);
- - implements 5 fragment shaders with possibility to switch between them on key pressed
+ - implements 7 fragment shaders with possibility to switch between them on key pressed
  - and 1 simple vertex shader that displaces model's vertices;
  - GUI for a smoother shader control;
  - additionally: syphon integration
@@ -17,7 +17,7 @@
  
  some notes:
  - ofLight params are of no use if we use custom shaders;
- - for notmal modification in the shader, it's useless to re-calculate the normal matrix in a shader, so pre-calculate it on CPU before passing it as a uniform to GPU.
+ - for normal modification in the shader, it's useless to re-calculate the normal matrix in a shader, so pre-calculate it on CPU before passing it as a uniform to GPU.
  *********************************************
  INSTRUCTIONS:
  - use keys 0-6 to switch between shaders
@@ -43,7 +43,6 @@ void ofApp::setup() {
     ofDisableArbTex(); //we want our texture coordinates in 0..1
     
     model.loadModel("models/womanRobot_norig.obj");
-//    model.loadModel("models/robot.obj");
     model.setRotation(0, 180, 1, 1, 0);
     drawFaces = false;
     drawVerts = true;
@@ -109,7 +108,7 @@ void ofApp::setUniforms() {
     shader.setUniform1f("u_amp", amp);
     shader.setUniform1f("u_freq", freq);
     
-    //calculate nomal matrix on CPU matrix before feeding it to GPU
+    //calculate nomal matrix on CPU matrix before feeding it to the GPU
     //for 4x4 matrix, simply use ofGetCurrentNormalMatrix();
     ofMatrix3x3 normalMat = ofMatrix3x3(ofGetCurrentMatrix(OF_MATRIX_MODELVIEW));
     normalMat.invert();
@@ -132,7 +131,7 @@ void ofApp::draw() {
     
     if(drawVerts) model.drawVertices();
     else if(drawWire) model.drawWireframe();
-    else if(drawFaces)model.drawFaces();
+    else if(drawFaces) model.drawFaces();
 
     ofPopMatrix();
 
@@ -191,7 +190,7 @@ void ofApp::loadShaders(size_t which) {
     }
     catch(std::exception& e) {
         std::cerr << "Error" <<e.what();
-        return; //todo: check with stan if it's right
+        return;
     }
 }
 
