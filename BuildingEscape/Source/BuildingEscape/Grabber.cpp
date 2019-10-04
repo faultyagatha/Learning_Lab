@@ -38,6 +38,7 @@ void UGrabber::SetupInputComponent() {
     //look for attached input component (only appears at run time)
     InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
     if(InputComponent) {
+        UE_LOG(LogTemp, Warning, TEXT("Grabber component is found"));
         //bind the input action (we operate on the same object with Grab in the input settings)
         InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
         InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
@@ -53,6 +54,7 @@ void UGrabber::Grab() {
     auto ActorHit = HitResult.GetActor();
     if(ActorHit) {
     //if we hit something, attach physics
+        if(!PhysicsHandle) { return; } //check for null pointers
         PhysicsHandle->GrabComponentAtLocation(
                         ComponentToGrab,
                         NAME_None,
@@ -62,6 +64,7 @@ void UGrabber::Grab() {
 
 void UGrabber::Release() {
     UE_LOG(LogTemp, Warning, TEXT("Releasing"));
+    if(!PhysicsHandle) { return; } //check for null pointers
     PhysicsHandle->ReleaseComponent();
 }
 
@@ -86,6 +89,7 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach() {
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    if(!PhysicsHandle) { return; } //check for null pointers
     if(PhysicsHandle->GrabbedComponent) {
         //move the object we're holding
         PhysicsHandle->SetTargetLocation(GetReachLineEnd());

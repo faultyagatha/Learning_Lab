@@ -2,6 +2,9 @@
 
 
 #include "OpenDoor.h"
+#include "Components/PrimitiveComponent.h"
+
+#define OUT
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -19,8 +22,9 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
     Owner = GetOwner(); //find the owning actor
-    //start searching for the player controller ("the mind of our pawn")
-    ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
+    if(!PressurePlate) {
+        UE_LOG(LogTemp, Error, TEXT("% missing  pressure plate"), *GetOwner()->GetName());
+    }
 }
 
 
@@ -30,8 +34,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//poll the trigger volume every frame
-    if(PressurePlate->IsOverlappingActor(ActorThatOpens))
-    {
+    if(GetTotalMassOfActorOnPlate() > 120.f) { //TODO: parametirise
         //if the ActoThatOpens is in the volume:
         OpenDoor();
         LastDoorOpenTime = GetWorld()->GetTimeSeconds();
@@ -43,10 +46,24 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
     }
 }
 
+float UOpenDoor::GetTotalMassOfActorOnPlate() {
+    float TotalMass = 0.f;
+    //find all the overlapping actors
+    TArray<AActor*> OverlappingActors;
+    if(!PressurePlate) { return TotalMass; }
+    PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+    //iterate over overlapping actors
+    for(const auto* Actor : OverlappingActors) { //use * instead of &
+        TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+    }
+        return TotalMass;
+}
+
 void UOpenDoor::OpenDoor()
 {
-    FRotator NewRotation = FRotator(0.0f, OpenAngle, 0.0f); //create a rotator
-    Owner->SetActorRotation(NewRotation); //set the rotation
+//    FRotator NewRotation = FRotator(0.0f, OpenAngle, 0.0f); //create a rotator
+//    Owner->SetActorRotation(NewRotation); //set the rotation
+    OnOpenRequest.Broadcast();
 }
 
 void UOpenDoor::CloseDoor()
