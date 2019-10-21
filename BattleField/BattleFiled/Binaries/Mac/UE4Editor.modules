@@ -2,6 +2,7 @@
 	"BuildId": "5660361",
 	"Modules": 
 	{
+		"BattleField": "UE4Editor-BattleField-0002.dylib",
 		"MyProject": "UE4Editor-MyProject.dylib"
 	}
 }

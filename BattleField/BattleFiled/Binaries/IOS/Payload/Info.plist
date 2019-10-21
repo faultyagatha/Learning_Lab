@@ -9,22 +9,22 @@
 			<string>com.Epic.Unreal</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>MyProject</string>
+				<string>BattleField</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>MyProject</string>
+	<string>BattleField</string>
 	<key>CFBundleExecutable</key>
-	<string>MyProject</string>
+	<string>BattleField</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.YourCompany.MyProject</string>
+	<string>com.YourCompany.BattleField</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>MyProject</string>
+	<string>BattleField</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
