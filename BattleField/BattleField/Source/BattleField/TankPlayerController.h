@@ -18,10 +18,13 @@ class BATTLEFIELD_API ATankPlayerController : public APlayerController
 public:
     ATankPlayerController();
     
-private:
-    ATank* GetControlledTank() const;
+protected:
     virtual void Tick(float DeltaTime) override;
     virtual void BeginPlay() override;
+    
+private:
+    ATank* GetControlledTank() const;
+
     void AimTowardsCrosshair(); //start the tank moving the barrel so that the shot would hit where the crosshair intersects the world
     
     UPROPERTY(EditAnywhere)
@@ -30,9 +33,14 @@ private:
     UPROPERTY(EditAnywhere)
     float CrosshairYLocation;
     
+    UPROPERTY(EditAnywhere)
+    float LineTraceRange;
+    
     //return an OUT parameter. True if hit anything in the world
     bool GetSightRayHitLocation(FVector& OutHitLocation) const;
     bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
+    
+    bool GetLookVectorHitLocation(FVector LookDirection, FVector& OutHitLocation) const;
     
 	
 };
