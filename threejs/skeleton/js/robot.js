@@ -30,6 +30,21 @@ Robot.prototype.buildRobot = function() {
     // this.root.add(pivot);
     // pivot.add(torsoMesh);
 
+     //robot's legs
+     let legWidth = 0.1;
+     let legHeight = torsoHeight*0.8;
+     let legDepth = 0.1;
+     let legGeometry = new THREE.BoxBufferGeometry(legWidth, legHeight, legDepth);
+     let leftLegMesh = new THREE.Mesh(legGeometry, material);
+     leftLegMesh.position.set(torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
+     leftLegMesh.name = 'left leg';
+     torsoMesh.add(leftLegMesh);
+ 
+     let rightLegMesh = leftLegMesh.clone();
+     rightLegMesh.position.set(-torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
+     rightLegMesh.name = 'right leg';
+     torsoMesh.add(rightLegMesh);
+
     //robot's head
     let offset = 0.01;
     let headRadius = 0.1;
@@ -57,21 +72,6 @@ Robot.prototype.buildRobot = function() {
     rightArmMesh.name = 'right arm';
     torsoMesh.add(rightArmMesh);
 
-    //robot's legs
-    let legWidth = 0.1;
-    let legHeight = torsoHeight*0.8;
-    let legDepth = 0.1;
-    let legGeometry = new THREE.BoxBufferGeometry(legWidth, legHeight, legDepth);
-    let leftLegMesh = new THREE.Mesh(legGeometry, material);
-    leftLegMesh.position.set(torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
-    leftLegMesh.name = 'left leg';
-    torsoMesh.add(leftLegMesh);
-
-    let rightLegMesh = leftLegMesh.clone();
-    rightLegMesh.position.set(-torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
-    rightArmMesh.name = 'right arm';
-    torsoMesh.add(rightLegMesh);
-
     //robot's feet
     let footWidth = 0.1;
     let footHeight = 0.07;
@@ -98,56 +98,70 @@ Robot.prototype.buildRobot = function() {
     return this.root
 };
 
-Robot.prototype.reset = function(){
+Robot.prototype.reset = function() {
         this.root.position.set(0., 0., 0.);
         this.root.setRotationFromEuler(new THREE.Euler(0,0,0));
-        //restore original colour
-        this.root.traverse(function(node) {
-            if(node instanceof THREE.Mesh) {
-                console.log(node.name);
-                node.material = new THREE.MeshLambertMaterial( {
-                    color: "blue", 
-                    } );
-            }
-       } );   
+        this.resetColour();
+ 
 };
 
+//restore original colour
+Robot.prototype.resetColour = function() {
+	this.root.traverse(function(node) {
+		if(node instanceof THREE.Mesh) {
+			console.log(node.name);
+			node.material = new THREE.MeshLambertMaterial( {
+				color: "blue", 
+				} );
+		}
+   } );   
+}
+
 //this one works but selects all children in one click
-Robot.prototype.selectChild = function() {
-    this.root.traverse(function(node) {
-        console.log(node.name);
-        if(node.children[0] instanceof THREE.Mesh) {
-            console.log(node.children[0].name);
-            let newMaterial = new THREE.MeshLambertMaterial( {
-                color: "red", 
-                } );
-            node.children[0].material = newMaterial;
-        }
-    });   
-} 
+//counter
+// Robot.prototype.selectChild = function(node) {
+//     if(!node) {
+//         console.log('this node is empty');
+//         return;
+//     }
+//     node.traverse(function(node) {
+//         console.log(node.name);
+//         if(node.children[0] instanceof THREE.Mesh) {
+//             console.log(node.children[0].name);
+//             let newMaterial = new THREE.MeshLambertMaterial( {
+//                 color: "red", 
+//                 } );
+//             node.children[0].material = newMaterial;
+//         }
+//     });   
+//     //do the node checking (if it's null - do this.)
+// } 
 
 Robot.prototype.selectParent = function() { 
+    // this.resetColour();
     this.root.traverse(function(node) {
         if(node instanceof THREE.Mesh && node.parent) {
             node.parent.material = new THREE.MeshLambertMaterial( {
-                color: "red", 
+                color: "#ff0000", 
                 } );
-            console.log(node.name);
+            console.log(node.parent.name);
+            // return node.parent;
         }
     } );
 }
 
-// Robot.prototype.selectChild = function(forward) {
-//     //I may need the lenths
-//     // this.counter = forward.children.length;
-//     let firstChild = this.root.children[0];
-//     console.log(firstChild.name);
-//     if(firstChild instanceof THREE.Mesh) {
-//         firstChild.material = new THREE.MeshLambertMaterial( {
-//             color: "red",
-//         } );
-//     } 
-// };
+Robot.prototype.selectChild = function(node) {
+    this.root.traverse(function(node) {
+        if(node instanceof THREE.Mesh) {
+            node.children.material = new THREE.MeshLambertMaterial( {
+                color: "#ff0000", 
+                } );
+            console.log(node.name);
+            node = node.children;
+        }
+    } );
+    // return node.children;
+};
 
 // Robot.prototype.selectChild = function(forward) {
 //     const firstIndex = forward.children[0];
@@ -171,13 +185,33 @@ Robot.prototype.selectParent = function() {
 // };
 
 Robot.prototype.selectSibling = function(forward) {
+    if(this.node) {
+        let firstChild = this.node;
+        while(firstChild.node) {
+            firstChild = firstChild.node;
+        }
+        return firstChild;
+    } else {
+        console.log('no children', this.node);
+        return this;
+    }
     
-    let prev = d3.select(this.previousSibling);
-    let allChildren = this.root.children;
 };
 
+//get the selected node
 Robot.prototype.toggleSelection = function() {
-//here I need to activate reycasting
+    this.root.traverse(function(node) {
+        // if(node instanceof THREE.Mesh && node.material.color.equals('red')) {
+            if(node instanceof THREE.Mesh) {
+                if(node.material.color.getStyle() === 'rgb(255,0,0)') {
+                    return node;
+                } 
+        }
+        return this.root;
+    } );
+    console.log("this object is ",this.root.node);
+    console.log(typeof node.mesh);
+    return this.root;
 };
 
 Robot.prototype.selectAll = function() {
@@ -198,7 +232,11 @@ Robot.prototype.rotateOnAxis = function(axis, degree) {
     console.log(angle);
     let quaternion = new THREE.Quaternion();
     quaternion.setFromAxisAngle(axis, angle);
-    this.root.applyQuaternion(quaternion);
+
+    let object = this.toggleSelection();
+    console.log(object);
+    object.applyQuaternion(quaternion);
+    // this.root.applyQuaternion(quaternion);
 
 };
 

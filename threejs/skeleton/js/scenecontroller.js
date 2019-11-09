@@ -55,8 +55,9 @@ SceneController.prototype.setupRaycaster = function()
 };
 
 SceneController.prototype.raycast = function() {
+    this.robot.resetColour();
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    let intersects = this.raycaster.intersectObjects(this.robot.root.children);
+    let intersects = this.raycaster.intersectObjects(this.robot.root.children, true);
     console.log('the length of intersection is ', intersects.length);
     if (intersects.length > 0) {
         console.log(intersects.length);
@@ -64,13 +65,6 @@ SceneController.prototype.raycast = function() {
         intersects[0].object.material = new THREE.MeshLambertMaterial( {
             color: "red", 
         } );
-
-    //     for(let i=0; i<intersects.length; i++) {
-    //         console.log(intersects.length);
-    //         console.log(intersects[i].object.name);
-    //         intersects[i].object.material = new THREE.MeshLambertMaterial( {
-    //         color: "red", 
-    //     } );
     }
     console.log('picking');
 }
@@ -123,9 +117,9 @@ SceneController.prototype.selectSibling = function(forward)
     this.robot.selectSibling(forward);
 };
 
-SceneController.prototype.selectChild = function()
+SceneController.prototype.selectChild = function(node)
 {
-    this.robot.selectChild();
+    this.robot.selectChild(node);
 };
 
 SceneController.prototype.toggleSelection = function()
@@ -142,8 +136,8 @@ SceneController.prototype.toggleAxisVisibility = function ()
     // utils provides two helper functions which could be used
     let axes = buildAxes(10);
     this.scene.add(axes);
-    // toggleVisibility(axes); 
-
+    toggleVisibility(axes);
+     
 };
 
 SceneController.prototype.rotateNode = function(axis, degree)

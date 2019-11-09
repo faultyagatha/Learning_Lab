@@ -1,7 +1,10 @@
 var HtmlController = function(sceneController)
 {
     this.sceneController = sceneController;
-    this.mouseStart = new THREE.Vector2();
+    // this.mouseStart = new THREE.Vector2();
+    // this.node = this.sceneController;
+    this.node = this.sceneController.robot.root.children;
+    // console.log(Robot.root);
 };
 
 HtmlController.prototype.setup = function()
@@ -58,7 +61,7 @@ HtmlController.prototype.onDocumentKeyDown = function(event) {
             console.log('w is pressed');
         break;
         case "s":
-            this.sceneController.selectChild();
+            this.sceneController.selectChild(this.node);
         break;
         case "a":
             this.sceneController.selectSibling(forward);
@@ -79,6 +82,7 @@ HtmlController.prototype.onDocumentKeyDown = function(event) {
             console.log('e is pressed');
         break;
         case "k":
+            this.sceneController.toggleSelection();
             console.log('k is pressed');
         break;
         case "h":
