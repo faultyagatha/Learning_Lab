@@ -3,7 +3,7 @@ var HtmlController = function(sceneController)
     this.sceneController = sceneController;
     // this.mouseStart = new THREE.Vector2();
     // this.node = this.sceneController;
-    this.node = this.sceneController.robot.root.children;
+    this.node = this.sceneController.robot.root;
     // console.log(Robot.root);
 };
 
@@ -64,7 +64,7 @@ HtmlController.prototype.onDocumentKeyDown = function(event) {
             this.sceneController.selectChild(this.node);
         break;
         case "a":
-            this.sceneController.selectSibling(forward);
+            this.sceneController.selectSibling(this.node);
             console.log('a is pressed');
         break;
         case "d":
@@ -89,16 +89,16 @@ HtmlController.prototype.onDocumentKeyDown = function(event) {
             toggleVisibility(document.getElementById("instructions"));
             break;
         case "ArrowUp":
-            this.sceneController.rotateNode(THREE.Vector3.XAxis, 90);
+            this.sceneController.rotateNode(THREE.Vector3.XAxis, 20);
             break;
         case "ArrowDown":
-            this.sceneController.rotateNode(THREE.Vector3.XAxis, -90);
+            this.sceneController.rotateNode(THREE.Vector3.XAxis, -20);
             break;
         case "ArrowLeft":
-            this.sceneController.rotateNode(THREE.Vector3.YAxis, -90);
+            this.sceneController.rotateNode(THREE.Vector3.YAxis, -20);
             break;
         case "ArrowRight":
-            this.sceneController.rotateNode(THREE.Vector3.YAxis, 90);
+            this.sceneController.rotateNode(THREE.Vector3.YAxis, 20);
             break;    
         
            

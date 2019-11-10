@@ -112,9 +112,9 @@ SceneController.prototype.selectParent = function()
     this.robot.selectParent();
 };
 
-SceneController.prototype.selectSibling = function(forward)
+SceneController.prototype.selectSibling = function(node)
 {
-    this.robot.selectSibling(forward);
+    this.robot.selectSibling(node);
 };
 
 SceneController.prototype.selectChild = function(node)
@@ -137,6 +137,7 @@ SceneController.prototype.toggleAxisVisibility = function ()
     let axes = buildAxes(10);
     this.scene.add(axes);
     toggleVisibility(axes);
+    // this.scene.remove(axes); 
      
 };
 
