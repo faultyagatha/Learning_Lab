@@ -2,9 +2,8 @@ var HtmlController = function(sceneController)
 {
     this.sceneController = sceneController;
     // this.mouseStart = new THREE.Vector2();
-    // this.node = this.sceneController;
+    this.lastMousePosition = {};
     this.node = this.sceneController.robot.root;
-    // console.log(Robot.root);
 };
 
 HtmlController.prototype.setup = function()
@@ -37,27 +36,39 @@ HtmlController.prototype.onDocumentMouseDown = function(event)
     this.sceneController.render();
 };
 
+//this implementation is very ugly and doesn't work as intended
 HtmlController.prototype.onDocumentMouseMove = function(event)
-{
+{   
+    //we can only calculate the distance if there already was a mouse event
+    if (typeof(lastMousePosition) != 'undefined') {
 
+        //calculate how far the mouse has moved
+        let deltaX = lastMousePosition.x - event.clientX;
+        let deltaY = lastMousePosition.y - event.clientY;
+
+        this.sceneController.rotateNode(THREE.Vector3.XAxis, deltaX);
+        this.sceneController.rotateNode(THREE.Vector3.XAxis, deltaY);
+    }
+    //save current position for next time
+    lastMousePosition = {
+        x : event.clientX,
+        y : event.clientY
+    };
 };
 
 HtmlController.prototype.onDocumentMouseUp = function(event)
 {
-    //event.button 0 - 4 gives right, middle, left, side button
-    // window.console.log("mouse up at " + event.x + " / " + event.y + " with button " + event.button);
+    
 };
-
 
 HtmlController.prototype.onDocumentKeyDown = function(event) {
     //as alternative to event.key one can use event.which that returns the ASCII codes, e.g., r = 82
     var keyCode = event.key;
-    // let scene = this.sceneController;
 
     switch(keyCode)
     {
         case "w":
-            this.sceneController.selectParent();
+            this.sceneController.selectParent(this.node);
             console.log('w is pressed');
         break;
         case "s":

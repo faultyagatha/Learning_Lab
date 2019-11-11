@@ -4,20 +4,27 @@ var Robot = function() {
     this.root.name = 'robot';
 };
 
-/*we can add a property to a previously defined object type by using the prototype property. 
-This defines a property that is shared by all objects of the specified type, 
-rather than by just one instance of the object. 
-*/
 Robot.prototype.buildRobot = function() {
 
     let material = new THREE.MeshLambertMaterial( {
-        color: "blue",  // CSS color names can be used!
+        color: "blue", 
     } );
 
-    //pivot
-    // let pivot = new THREE.Group();
-    // pivot.position.set(0., 0., 0.);
-    // pivot.name = 'pivot';
+    //  attempt to use pivots for rotations
+    // let leftLegPivot = new THREE.Object3D();
+    // leftLegPivot.name = 'left leg pivot';
+    // let rightLegPivot = new THREE.Object3D();
+    // rightLegPivot.name = 'right leg pivot';
+    // let leftFootPivot = new THREE.Object3D();
+    // leftFootPivot.name = 'left foot pivot';
+    // let rightFootPivot = new THREE.Object3D();
+    // rightFootPivot.name = 'right foot pivot';
+    // let leftArmPivot = new THREE.Object3D();
+    // leftArmPivot.name = 'left arm pivot';
+    // let rightArmPivot = new THREE.Object3D();
+    // rightArmPivot.name = 'right arm pivot';
+    // let headPivot = new THREE.Object3D();
+    // headPivot.name = 'head pivot';
 
     //robot's torso
     let torsoWidth = 0.2;
@@ -27,8 +34,6 @@ Robot.prototype.buildRobot = function() {
     let torsoMesh = new THREE.Mesh(torsoGeometry, material);
     torsoMesh.name = 'torso';
     this.root.add(torsoMesh);
-    // this.root.add(pivot);
-    // pivot.add(torsoMesh);
 
      //robot's legs
      let legWidth = 0.1;
@@ -38,12 +43,21 @@ Robot.prototype.buildRobot = function() {
      let leftLegMesh = new THREE.Mesh(legGeometry, material);
      leftLegMesh.position.set(torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
      leftLegMesh.name = 'left leg';
+     console.log(leftLegMesh.position);
+     leftLegMesh.position.set(torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
      torsoMesh.add(leftLegMesh);
- 
+    //  leftLegPivot.add(leftLegMesh);
+    //  leftLegPivot.position.set(0, leftLegMesh.position.y+0.38, 0);
+    //  torsoMesh.add(leftLegPivot);
+    
      let rightLegMesh = leftLegMesh.clone();
      rightLegMesh.position.set(-torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
      rightLegMesh.name = 'right leg';
+     rightLegMesh.position.set(-torsoWidth*0.5, torsoHeight*0.5-legHeight*1.9, 0);
      torsoMesh.add(rightLegMesh);
+    //  rightLegPivot.add(rightLegMesh);
+    //  rightLegPivot.position.set(0, rightLegMesh.position.y+0.38, 0);
+    //  torsoMesh.add(rightLegPivot);
 
     //robot's head
     let offset = 0.01;
@@ -53,6 +67,7 @@ Robot.prototype.buildRobot = function() {
     headMesh.position.set(0, torsoHeight*0.52+headRadius+offset, 0);
     headMesh.name = 'head';
     torsoMesh.add(headMesh);
+
 
     //robot's arms
     let armHeight = 0.1;
@@ -64,11 +79,18 @@ Robot.prototype.buildRobot = function() {
     leftArmMesh.position.set(torsoWidth+offset, torsoHeight*0.5 - armWidth*0.5, 0);
     leftArmMesh.name = 'left arm';
     torsoMesh.add(leftArmMesh);
+    // leftArmPivot.position.set(torsoWidth+offset, torsoHeight*0.5 - armWidth*0.5, 0);
+    // torsoMesh.add(leftArmPivot);
+    // leftArmPivot.add(leftArmMesh);
 
     let rightArmMesh = leftArmMesh.clone();
     rightArmMesh.position.set(-(torsoWidth+offset), torsoHeight*0.5 - armWidth*0.5, 0);
-    rightArmMesh.name = 'right arm';
     torsoMesh.add(rightArmMesh);
+    rightArmMesh.name = 'right arm';
+    // torsoMesh.add(rightArmPivot);
+    // rightArmPivot.position.set(-(torsoWidth+offset), torsoHeight*0.5 - armWidth*0.5, 0);
+    // rightArmPivot.add(rightArmMesh);
+    
 
     //robot's feet
     let footWidth = 0.1;
@@ -98,9 +120,9 @@ Robot.prototype.buildRobot = function() {
 
 Robot.prototype.reset = function() {
     this.root.traverse(function(node) {
-		if(node instanceof THREE.Mesh) {
+		// if(node instanceof THREE.Mesh) {
             node.setRotationFromEuler(new THREE.Euler(0,0,0));
-        }
+        // }
    } );   
         this.resetColour();
 };
@@ -112,50 +134,44 @@ Robot.prototype.resetColour = function() {
 			console.log(node.name);
 			node.material = new THREE.MeshLambertMaterial( {
 				color: "blue", 
-				} );
+			} );
 		}
    } );   
 }
 
 //works but selects all parents in one click
-//gives funny results when rotating with arrows :)
-Robot.prototype.selectParent = function() { 
-    this.root.traverse(function(node) {
+//gives funny results when rotating with arrows
+Robot.prototype.selectParent = function(forward) { 
+    forward.traverse(function(node) {
         if(node instanceof THREE.Mesh && node.parent) {
             node.parent.material = new THREE.MeshLambertMaterial( {
                 color: "#ff0000", 
                 } );
             console.log(node.parent.name);
-            // return node.parent;
         }
     } );
 }
 
-//works but selects all children in one click
-//gives funny results when rotating with arrows :)
+//selects all children in one click
+//gives funny results when rotating with arrows
 Robot.prototype.selectChild = function(forward) {
     forward.traverse(function(node) {
-        if(node.children[0] instanceof THREE.Mesh) {
+        if(node.children[0] instanceof THREE.Mesh && node.children[0].visible) {
             node.children[0].material = new THREE.MeshLambertMaterial( {
                 color: "red",
                         } ); 
-            // forward = forward.children[0];
         }
     } );
 }
 
-
-Robot.prototype.selectSibling = function(node) {
-    if(!node) {
-        console.log('node is undefined');
-        return this;
-    }
-        let firstChild = node.children[0];
-        console.log(firstChild);
-        while(firstChild.node) {
-            firstChild = firstChild.children;
-            console.log('first child is ', firstChild);
-            return firstChild.mesh;
+Robot.prototype.selectSibling = function(forward) {
+        for(let i=0; i<forward.children.length; i++) {
+            console.log(forward.children.length);
+            if(forward.children[i] instanceof THREE.Mesh && forward.children[i].visible) {
+                forward.children[i].material = new THREE.MeshLambertMaterial( {
+                    color: "red",
+                            } ); 
+            }
         }
 };
 
@@ -164,34 +180,14 @@ Robot.prototype.toggleSelection = function() {
 
 };
 
-// Robot.prototype.toggleSelection = function() {
-//     // let node = this.root.children[0];
-//     this.root.traverse(function(node) {
-//             if(node instanceof THREE.Mesh) {
-//                 if(node.material.color.getStyle() === 'rgb(255,0,0)') {
-//                     console.log('type is ', typeof node);
-//                     console.log('name is ', node.name);
-//                     console.log('material is ', node.material.color);
-//                     // return node;
-//                 } 
-//         }
-//         return this.root;
-//     } );
-
-//     // console.log("this object is ", node);
-//     // console.log(typeof node);
-//     return this.root;
-// };
-
 Robot.prototype.selectAll = function() {
     this.root.traverse(function(node) {
         if(node instanceof THREE.Mesh) {
             console.log(node.name, typeof node);
             node.material = new THREE.MeshLambertMaterial( {
                 color: "red", 
-                } );
+            } );
         }
-        
     } );   
 };
 
@@ -203,19 +199,19 @@ Robot.prototype.rotateOnAxis = function(axis, degree) {
     // let quaternion = new THREE.Quaternion();
     // quaternion.setFromAxisAngle(axis, angle);
 
-    //2. rotate with matrices
+    //2. rotate with matrices: works but ignoring pivot [see the implementation below]
     //hints: https://gist.github.com/clavis-magna/4138387
-    let rotWorldMatrix = new THREE.Matrix4();
-    rotWorldMatrix.makeRotationAxis(axis, angle);
+    let rotationMatrix = new THREE.Matrix4();
+    rotationMatrix.makeRotationAxis(axis, angle);
+// we could also rotate using quaternion: rotationMatrix.makeRotationFromQuaternion(quaternion);
 
     this.root.traverse(function(node) {
         if(node instanceof THREE.Mesh) {
             if(node.material.color.getStyle() === 'rgb(255,0,0)') {
-            
-                // post-multiply matrices
-                rotWorldMatrix.multiply(node.matrix); 
+                // post-multiply matrices to rotate an object around an axis in object space
+                rotationMatrix.multiply(node.matrix); 
                 // console.log(node.matrix);
-                node.matrix = rotWorldMatrix;
+                node.matrix = rotationMatrix;
                 node.rotation.setFromRotationMatrix(node.matrix,'XYZ');
                 // node.applyQuaternion(quaternion);
             } 
@@ -223,7 +219,29 @@ Robot.prototype.rotateOnAxis = function(axis, degree) {
     } );
 };
 
+//this one rotates more or less accurate but only once
+// Robot.prototype.rotateOnAxis = function(axis, degree) {
+//     let angle = degToRad(degree);
+//     console.log(angle);
+
+//     //local rotation matrix
+//     let rotationMatrix = new THREE.Matrix4(); 
+
+//     this.root.traverse(function(node) {
+//         if(node instanceof THREE.Mesh) {
+//             if(node.material.color.getStyle() === 'rgb(255,0,0)') {
+//                 // post-multiply matrices 
+//                 rotationMatrix.makeRotationAxis(axis, angle);
+//                 node.parent.matrix.multiply(rotationMatrix);                       // post-multiply
+//                 node.parent.matrix = rotationMatrix;
+//                 node.parent.rotation.setFromRotationMatrix(node.parent.matrix,'XYZ');
+//             }
+//         }
+//     } );
+// };
+
+
 Robot.prototype.animate = function() {
-    this.root.getObjectByName('pivot').rotationY += 0.01;
+    
 }
 

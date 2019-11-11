@@ -107,19 +107,19 @@ SceneController.prototype.reset = function()
     this.robot.reset();
 };
 
-SceneController.prototype.selectParent = function() 
+SceneController.prototype.selectParent = function(forward) 
 {
-    this.robot.selectParent();
+    this.robot.selectParent(forward);
 };
 
-SceneController.prototype.selectSibling = function(node)
+SceneController.prototype.selectSibling = function(forward)
 {
-    this.robot.selectSibling(node);
+    this.robot.selectSibling(forward);
 };
 
-SceneController.prototype.selectChild = function(node)
+SceneController.prototype.selectChild = function(forward)
 {
-    this.robot.selectChild(node);
+    this.robot.selectChild(forward);
 };
 
 SceneController.prototype.toggleSelection = function()
@@ -132,11 +132,20 @@ SceneController.prototype.selectAll = function() {
 };
 
 SceneController.prototype.toggleAxisVisibility = function ()
-{
-    // utils provides two helper functions which could be used
+{   
+    // let axes = buildAxes(10);
+    // // toggleVisibility(axes);
+    // this.robot.root.traverse(function(node) {
+    //     if(node instanceof THREE.Mesh) {
+    //         if(node.material.color.getStyle() === 'rgb(255,0,0)') {
+                
+    //             node.parent.add(axes);
+    //         }
+    //     }
+    // } );
     let axes = buildAxes(10);
     this.scene.add(axes);
-    toggleVisibility(axes);
+    
     // this.scene.remove(axes); 
      
 };
