@@ -36,24 +36,12 @@ HtmlController.prototype.onDocumentMouseDown = function(event)
     this.sceneController.render();
 };
 
-//this implementation is very ugly and doesn't work as intended
+/* this is an attempt to rotate with a mouse. It doesn't work implementation is very ugly and doesn't work as intended
+the robot ends up being spliced into rotating pieces. I commented it out.
+*/
 HtmlController.prototype.onDocumentMouseMove = function(event)
 {   
-    //we can only calculate the distance if there already was a mouse event
-    if (typeof(lastMousePosition) != 'undefined') {
-
-        //calculate how far the mouse has moved
-        let deltaX = lastMousePosition.x - event.clientX;
-        let deltaY = lastMousePosition.y - event.clientY;
-
-        this.sceneController.rotateNode(THREE.Vector3.XAxis, deltaX);
-        this.sceneController.rotateNode(THREE.Vector3.XAxis, deltaY);
-    }
-    //save current position for next time
-    lastMousePosition = {
-        x : event.clientX,
-        y : event.clientY
-    };
+    
 };
 
 HtmlController.prototype.onDocumentMouseUp = function(event)
@@ -84,7 +72,7 @@ HtmlController.prototype.onDocumentKeyDown = function(event) {
         case "c":
             this.sceneController.toggleAxisVisibility();
             break; 
-        case "r": // r
+        case "r": 
             this.sceneController.controls.reset();
             this.sceneController.reset();
             break;

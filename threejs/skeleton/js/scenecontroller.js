@@ -133,20 +133,21 @@ SceneController.prototype.selectAll = function() {
 
 SceneController.prototype.toggleAxisVisibility = function ()
 {   
-    // let axes = buildAxes(10);
-    // // toggleVisibility(axes);
-    // this.robot.root.traverse(function(node) {
-    //     if(node instanceof THREE.Mesh) {
-    //         if(node.material.color.getStyle() === 'rgb(255,0,0)') {
-                
-    //             node.parent.add(axes);
-    //         }
-    //     }
-    // } );
-    let axes = buildAxes(10);
-    this.scene.add(axes);
-    
-    // this.scene.remove(axes); 
+    this.robot.root.traverse(function(node) {
+        if(node instanceof THREE.Mesh) {
+            if(node.material.color.getStyle() === 'rgb(255,0,0)') {
+                //1. compute the geometry's bounds
+                node.geometry.computeBoundingBox();
+                let bounds = node.geometry.boundingBox;
+                //2. get the center of boundingBox
+                let center = bounds.getCenter();
+                let axes = buildAxes(0.2);
+                //3. position axes at center of geometry
+                axes.position.copy(center);
+                node.add(axes);
+            }
+        }
+    } );
      
 };
 

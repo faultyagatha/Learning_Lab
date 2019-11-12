@@ -10,7 +10,8 @@ Robot.prototype.buildRobot = function() {
         color: "blue", 
     } );
 
-    //  attempt to use pivots for rotations
+    /* a lousy attempt to use pivots for rotations that don't work how I want them to work
+    */ 
     // let leftLegPivot = new THREE.Object3D();
     // leftLegPivot.name = 'left leg pivot';
     // let rightLegPivot = new THREE.Object3D();
@@ -203,7 +204,7 @@ Robot.prototype.rotateOnAxis = function(axis, degree) {
     //hints: https://gist.github.com/clavis-magna/4138387
     let rotationMatrix = new THREE.Matrix4();
     rotationMatrix.makeRotationAxis(axis, angle);
-// we could also rotate using quaternion: rotationMatrix.makeRotationFromQuaternion(quaternion);
+    // we could also rotate using quaternion: rotationMatrix.makeRotationFromQuaternion(quaternion);
 
     this.root.traverse(function(node) {
         if(node instanceof THREE.Mesh) {
@@ -219,7 +220,7 @@ Robot.prototype.rotateOnAxis = function(axis, degree) {
     } );
 };
 
-//this one rotates more or less accurate but only once
+//this one rotates more or less accurate (or as it seems :)) but only once
 // Robot.prototype.rotateOnAxis = function(axis, degree) {
 //     let angle = degToRad(degree);
 //     console.log(angle);
